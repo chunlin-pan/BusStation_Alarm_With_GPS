@@ -78,25 +78,25 @@ public class Second extends AppCompatActivity{
             String centerURL = "javascript:centerAt("+location.getLatitude()+","+location.getLongitude()+")";
             wv.loadUrl(centerURL);
         }
-//        try {
-//            locationManager.requestLocationUpdates(commadStr, 0, 0, locationListener);
-//             location = locationManager.getLastKnownLocation(commadStr);
-//            if (location!=null) {
-//                String centerURL = "javascript:centerAt("+location.getLatitude()+","+location.getLongitude()+")";
-//                wv.loadUrl(centerURL);
-//            }
-//        } catch (SecurityException e) {
-//            if (ActivityCompat.checkSelfPermission(Second.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-//                    && ActivityCompat.checkSelfPermission(Second.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                ActivityCompat.requestPermissions(Second.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},1);
-//                ActivityCompat.requestPermissions(Second.this,new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},1);
-//
-//                return;
-//            }
-//            e.printStackTrace();
-//            Log.d("TAG", e.toString());
-//            //上面這個是將假如出現錯誤的例外資料可以顯示在下面的欄位中
-//        }
+        try {
+            locationManager.requestLocationUpdates(commadStr, 0, 0, locationListener);
+             location = locationManager.getLastKnownLocation(commadStr);
+            if (location!=null) {
+                String centerURL = "javascript:centerAt("+location.getLatitude()+","+location.getLongitude()+")";
+                wv.loadUrl(centerURL);
+            }
+        } catch (SecurityException e) {
+            if (ActivityCompat.checkSelfPermission(Second.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(Second.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(Second.this,new String[] {Manifest.permission.ACCESS_FINE_LOCATION},1);
+                ActivityCompat.requestPermissions(Second.this,new String[] {Manifest.permission.ACCESS_COARSE_LOCATION},1);
+
+                return;
+            }
+            e.printStackTrace();
+            Log.d("TAG", e.toString());
+            //上面這個是將假如出現錯誤的例外資料可以顯示在下面的欄位中
+        }
 
         bt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
