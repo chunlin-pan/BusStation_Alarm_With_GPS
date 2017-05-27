@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -18,7 +17,6 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * Created by user on 2017/5/5.
@@ -28,23 +26,17 @@ public class Second extends AppCompatActivity{
     Button end,bt;
     TextView Show_Latitude_and_Longitude,Show_Distance;
     LocationManager locationManager;
-    Criteria criteria;
     WebView wv;
     Location location;
     float distanceInMeters=0;
     double[] k;
     MediaPlayer mediaplayer=new MediaPlayer();
     boolean check=false;
-    String centerURL="p";
     //站牌的位置
     Location loc1 = new Location("");
-
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.page2);
-
-
-
 
         //檢查權限是否開啟
         if (ActivityCompat.checkSelfPermission(Second.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -79,27 +71,19 @@ public class Second extends AppCompatActivity{
         //將現在位置顯示在地圖上
 
         String commadStr = LocationManager.GPS_PROVIDER;
-        String NetcommadStr=LocationManager.NETWORK_PROVIDER;
 
-
+        locationManager.requestLocationUpdates(commadStr, 1000, 0, locationListener);
+        location = locationManager.getLastKnownLocation(commadStr);
+        if (location!=null) {
+            String centerURL = "javascript:centerAt("+location.getLatitude()+","+location.getLongitude()+")";
+            wv.loadUrl(centerURL);
+        }
         try {
-            locationManager.requestLocationUpdates(NetcommadStr, 0, 0, locationListener);
-            location = locationManager.getLastKnownLocation(NetcommadStr);
-
+            locationManager.requestLocationUpdates(commadStr, 0, 0, locationListener);
+             location = locationManager.getLastKnownLocation(commadStr);
             if (location!=null) {
-                 centerURL = "javascript:centerAt("+location.getLatitude()+","+location.getLongitude()+")";
+                String centerURL = "javascript:centerAt("+location.getLatitude()+","+location.getLongitude()+")";
                 wv.loadUrl(centerURL);
-                Toast.makeText(this, "mainnetwork", Toast.LENGTH_SHORT).show();
-            }
-            else {
-                locationManager.requestLocationUpdates(commadStr, 0, 0, locationListener);
-                location = locationManager.getLastKnownLocation(commadStr);
-                if (location != null) {
-                     centerURL = "javascript:centerAt(" + location.getLatitude() + "," + location.getLongitude() + ")";
-                    wv.loadUrl(centerURL);
-
-                    Toast.makeText(this, "maingps", Toast.LENGTH_SHORT).show();
-                }
             }
         } catch (SecurityException e) {
             if (ActivityCompat.checkSelfPermission(Second.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -118,31 +102,16 @@ public class Second extends AppCompatActivity{
             public void onClick(View view) {
 
                 String commadStr = LocationManager.GPS_PROVIDER;
-                String NetcommadStr=LocationManager.NETWORK_PROVIDER;
 
 
                 try {
                     locationManager.requestLocationUpdates(commadStr, 1000, 0, locationListener);
                     location = locationManager.getLastKnownLocation(commadStr);
-
-                    if(location!=null) {
-                        locationManager.requestLocationUpdates(NetcommadStr, 0, 0, locationListener);
-                        location = locationManager.getLastKnownLocation(commadStr);
-                        if (location != null) {
-                             centerURL = "javascript:centerAt(" + location.getLatitude() + "," + location.getLongitude() + ")";
-                            wv.loadUrl(centerURL);
-                            Toast.makeText(Second.this, "gps", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                    else   {
-                        locationManager.requestLocationUpdates(NetcommadStr, 0, 0, locationListener);
-                        location = locationManager.getLastKnownLocation(NetcommadStr);
-                         centerURL = "javascript:centerAt("+location.getLatitude()+","+location.getLongitude()+")";
+                    if (location!=null) {
+                        String centerURL = "javascript:centerAt("+location.getLatitude()+","+location.getLongitude()+")";
                         wv.loadUrl(centerURL);
-                        Toast.makeText(Second.this, "network", Toast.LENGTH_SHORT).show();
 
                     }
-
                 } catch (SecurityException e) {
                     if (ActivityCompat.checkSelfPermission(Second.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                             && ActivityCompat.checkSelfPermission(Second.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -189,21 +158,19 @@ public class Second extends AppCompatActivity{
         loc1.setLongitude(k[1]);
 
         try {
-            if(location!=null){
+            if(location!=null)
                 distanceInMeters = Math.round(location.distanceTo(loc1));
-            }
         }catch (Exception e){
             e.printStackTrace();
             Log.d("dis", e.toString());
         }
-        Show_Distance.setText("距離是="+distanceInMeters+"公尺"+location.getLatitude()+" "+location.getLongitude()+" "+centerURL);
+        Show_Distance.setText("距離是="+distanceInMeters+"公尺");
     }
 
 
     private Button.OnClickListener listener=new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             finish();
 
         }
@@ -253,12 +220,4 @@ public class Second extends AppCompatActivity{
         public void onProviderEnabled(String provider) {}
         public void onProviderDisabled(String provider) {}
     };
-    public  void load(Location location,WebView wv){
-        String k = "javascript:centerAt(" + location.getLatitude() + "," + location.getLongitude() + ")";
-        wv.loadUrl(k);
-    }
-    protected void onResume(){
-        super.onResume();
-        wv.loadUrl(centerURL);
-    }
 }
